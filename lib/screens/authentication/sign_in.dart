@@ -1,5 +1,6 @@
 import 'package:firebasetutorial/screens/services/auth.dart';
 import 'package:firebasetutorial/shared/constants.dart';
+import 'package:firebasetutorial/shared/loading.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
@@ -15,18 +16,20 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
 
   final AuthService _auth = AuthService();
+  final _formkey = GlobalKey<FormState>();
+  bool loading = false;
 
   // text field state
   String email = '';
   String password = '';
-  final _formkey = GlobalKey<FormState>();
   String error = '';
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.brown,
+    return loading ? Loading() : Scaffold(
+      backgroundColor: Colors.blue,
       appBar: AppBar(
-        backgroundColor: Colors.brown[400],
+        backgroundColor: Colors.blue[400],
         elevation: 0.0,
         title: Text('Sign In'),
         actions: <Widget>[
@@ -75,10 +78,14 @@ class _SignInState extends State<SignIn> {
                 ),
                 onPressed: () async {
                   if (_formkey.currentState.validate()){
+                    setState(() {
+                      loading = true;
+                    });
                     dynamic result = await _auth.signInWithEmailAndPassword(email, password);
                     if (result == null) {
                       setState(() {
                         error = 'Invalid Credentials: Username or Password incorrect';
+                        loading = false;
                       });
                     }
                   }

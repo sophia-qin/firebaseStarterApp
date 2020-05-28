@@ -1,5 +1,6 @@
 import 'package:firebasetutorial/screens/services/auth.dart';
 import 'package:firebasetutorial/shared/constants.dart';
+import 'package:firebasetutorial/shared/loading.dart';
 import 'package:flutter/material.dart';
 
 class Register extends StatefulWidget {
@@ -13,16 +14,17 @@ class _RegisterState extends State<Register> {
 
   final AuthService _auth = AuthService();
   final _formkey = GlobalKey<FormState>();
+  bool loading = false;
   // text field state
   String email = '';
   String password = '';
   String error = '';
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.brown,
+    return loading ? Loading(): Scaffold(
+        backgroundColor: Colors.blue,
         appBar: AppBar(
-          backgroundColor: Colors.brown[400],
+          backgroundColor: Colors.blue[400],
           elevation: 0.0,
           title: Text('Register'),
           actions: <Widget>[
@@ -71,10 +73,14 @@ class _RegisterState extends State<Register> {
                     ),
                     onPressed: () async {
                       if (_formkey.currentState.validate()){
+                        setState(() {
+                          loading = true;
+                        });
                         dynamic result = await _auth.registerWithEmailAndPassword(email, password);
                         if (result == null) {
                           setState(() {
                             error = 'Please supply a vaid email';
+                            loading = false;
                           });
                         }
                       } else {
